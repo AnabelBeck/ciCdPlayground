@@ -14,8 +14,14 @@ pipeline {
         stage('unit tests') {
             steps {
                 sh 'yarn test'
-                junit stdioRetention: 'ALL', testResults: '**/reports/**/*.xml'
+                
             }
+            post {
+        always {
+          // Skip checks publishing if no SCM integration is needed
+          junit stdioRetention: 'ALL', testResults: '**/reports/**/*.xml'
+        }
+      }
         }
 
         stage('build') {
@@ -28,6 +34,12 @@ pipeline {
             steps {
                 sh 'yarn test:e2e'
             }
+            post {
+        always {
+          // Skip checks publishing if no SCM integration is needed
+          junit stdioRetention: 'ALL', testResults: '**/reports/**/*.xml'
+        }
+      }
         }
         
         stage('deploy') {
