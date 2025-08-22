@@ -4,12 +4,17 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+        version:
+          description: 'Release version (e.g., "v1.0.0")'
+          required: true
+          type: string
   
 permissions:
   checks: write
   pull-requests: write
   id-token: write
-  contents: read
+  contents: write
   pages: write
 
 jobs:
@@ -22,6 +27,15 @@ jobs:
     # It is not clear which versions these are, 
     # so it might be a good idea to specify them via an action like actions/setup-node@v4
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Needed for full git history access
+        token: ${{ secrets.GITHUB_TOKEN }}  # Required to push tags
+
+      # Setup Git identity (required for tagging)
+    - name: Configure Git
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
     - name: Install
       run: yarn
     - name: Unit tests
@@ -35,5 +49,11 @@ jobs:
       with:
         report_paths: 'reports/*.xml'
         fail_on_failure: false
+       # Tag the commit if version is provided via workflow_dispatch
+    - name: Tag Commit
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' }}
+      run: |
+        git tag ${{ github.event.inputs.version }}
+        git push origin ${{ github.event.inputs.version }}
       
     
