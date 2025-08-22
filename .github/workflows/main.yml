@@ -30,3 +30,10 @@ jobs:
       run: yarn build
     - name: Integration tests
       run: yarn test:e2e
+    - name: JUnit Report Action
+      uses: mikepenz/action-junit-report@v5.6.2
+      with:
+        report_paths: 'reports/*.xml'
+        fail_on_failure: false
+      
+    
