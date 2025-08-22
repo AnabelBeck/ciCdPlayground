@@ -14,6 +14,7 @@ pipeline {
         stage('unit tests') {
             steps {
                 sh 'yarn test'
+                junit stdioRetention: 'ALL', testResults: '**/reports/**/*.xml'
             }
         }
 
