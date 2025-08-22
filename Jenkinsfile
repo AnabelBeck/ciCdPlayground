@@ -17,18 +17,18 @@ pipeline {
             }
         }
 
-        stage('intergration tests') {
-            steps {
-                sh 'yarn test:e2e'
-            }
-        }
-
         stage('build') {
             steps {
                 sh 'yarn build'
             }
         }
-
+        
+        stage('intergration tests') {
+            steps {
+                sh 'yarn test:e2e'
+            }
+        }
+        
         stage('deploy') {
             steps {
                 s3Upload consoleLogLevel: 'INFO', 
